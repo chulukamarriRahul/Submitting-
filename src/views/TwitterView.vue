@@ -1,8 +1,27 @@
 <template>
-     <!-- <div>
-        <span>Twubric Score	:</span>
-        <input type="number" v-model.number="minTotal" />
-      </div> -->
+    <div class="filter-container">
+        <!-- twubric filter -->
+        <div class="filter">
+      <label for="total-filter">Twubric Score:</label>
+      <input type="number" id="total-filter" v-model="minTotal">
+    </div>
+    <!-- friends filter -->
+    <div class="filter">
+      <label for="friends-filter">Friends:</label>
+      <input type="number" id="friends-filter" v-model="minFriends">
+    </div>
+    <!-- influence filter -->
+    <div class="filter">
+      <label for="influence-filter">Influence:</label>
+      <input type="number" id="influence-filter" v-model="minInfluence">
+    </div>
+    <!-- chirpiness filter -->
+    <div class="filter">
+      <label for="chirpiness-filter">Chirpiness:</label>
+      <input type="number" id="chirpiness-filter" v-model="minChirpiness">
+    </div>
+    </div>
+    <!-- Date filter -->
       <div class="Date">
     <div class="start-date">
       <span>Start Date</span> 
@@ -18,7 +37,7 @@
     <div v-for="(item,index) in filteredData " :key="index"  class="box">
       <div  class="row">
         <div class="cell top-left">{{ item.fullname }}</div>
-        <div class="cell top-right">{{ item.twubric.total }}</div>
+        <div class="cell top-right">{{ item.twubric .total }}</div>
       </div>
       <div class="divider"></div>
       <div class="row">
@@ -34,7 +53,7 @@
       <div class="divider"></div>
       <div class="row">
         <div class="cell bottom-left">{{ formatDate(item.join_date) }}</div>
-        <button class="cell bottom-right">Remove</button>
+        <button @click="removeData" class="cell bottom-right">Remove</button>
       </div>
       <div class="divider"></div>
     </div>
@@ -45,7 +64,7 @@
   import {ref,computed} from 'vue'
   import moment from 'moment'
   import VueDatePicker from 'vue3-datepicker'
-
+// Data 
   const data = ref([
   {
     "uid": 1,
@@ -181,22 +200,32 @@
 
 const startDate = ref('')
 const endDate = ref('')
-
+const minTotal = ref(null)
+const minFriends = ref(null)
+const minInfluence = ref(null)
+const minChirpiness = ref(null)
+// Date formate
 const formatDate = (date) => {
   return moment(date * 1000).format('MMM D, YYYY')
 }
-
-// Define a computed property to filter data based on start and end date
+// filter functionality
 const filteredData = computed(() => {
   const startTimestamp = startDate.value ? moment(startDate.value).startOf('day').unix() : 0
   const endTimestamp = endDate.value ? moment(endDate.value).endOf('day').unix() : moment().endOf('day').unix()
   return data.value.filter(item => {
     const itemTimestamp = moment(item.join_date * 1000).unix()
-    return itemTimestamp >= startTimestamp && itemTimestamp <= endTimestamp
+    return itemTimestamp >= startTimestamp && itemTimestamp <= endTimestamp &&
+      (!minTotal.value || item.twubric.total >= minTotal.value) &&
+      (!minFriends.value || item.twubric.friends >= minFriends.value) &&
+      (!minInfluence.value || item.twubric.influence >= minInfluence.value) &&
+      (!minChirpiness.value || item.twubric.chirpiness >= minChirpiness.value)
   })
 })
 
-
+// remove data 
+const removeData = (index)=>{
+    data.value.splice(index,1)
+}
 
 
 
@@ -243,9 +272,6 @@ const filteredData = computed(() => {
   .top-left,
   .top-right,
   .bottom-left,
-  /* .bottom-right {
-    border: none;
-  } */
   
   .top-center,
   .bottom-center {
@@ -256,5 +282,13 @@ const filteredData = computed(() => {
   .divider {
     border-bottom: 1px solid #000;
   }
+
+  .filter-container {
+  display: flex;
+}
+
+.filter {
+  margin-right: 170px; 
+}
   </style>
   
