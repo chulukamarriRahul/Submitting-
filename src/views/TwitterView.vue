@@ -30,9 +30,8 @@
       <span>Endt Date</span>
       <VueDatePicker v-model="endDate" />
     </div>
-
-     
       </div>
+      <!-- displaying the data -->
     <div class="container">
     <div v-for="(item,index) in filteredData " :key="index"  class="box">
       <div  class="row">
